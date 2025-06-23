@@ -1,0 +1,42 @@
+<form #f="ngForm" (ngSubmit)="startGame(f)" novalidate class="min-h-screen flex items-center justify-center bg-gray-100">
+    <app-card class="w-full max-w-xl p-8">
+        <h1 class="text-2xl font-bold mb-4 text-center">Piedra, Papel o Tijera Games</h1>
+        <p class="mb-6 text-start text-gray-600">Por favor registre los jugadores</p>
+
+        <div class="mb-4">
+            <div class="flex items-center">
+                <label class="mr-2 text-gray-700 whitespace-nowrap">Jugador 1</label>
+                <app-input name="player1" #input1="ngModel" [(ngModel)]="player1" placeholder="Nombre Completo"
+                    class="w-full" required minlength="3" pattern="^[a-zA-ZÁÉÍÓÚÑáéíóúñ ]+$"></app-input>
+            </div>
+            <ul *ngIf="input1.invalid && input1.touched" class="text-red-600 text-sm mt-1 list-disc list-inside">
+                <li *ngIf="input1.errors?.['required']">Este campo es obligatorio.</li>
+                <li *ngIf="input1.errors?.['minlength']">Debe tener al menos 3 caracteres.</li>
+                <li *ngIf="input1.errors?.['pattern']">No se permiten símbolos o caracteres especiales.</li>
+            </ul>
+        </div>
+
+        <div class="mb-4">
+            <div class="flex items-center">
+                <label class="mr-2 text-gray-700 whitespace-nowrap">Jugador 2</label>
+                <app-input name="player2" #input2="ngModel" [(ngModel)]="player2" placeholder="Nombre Completo"
+                    class="w-full" required minlength="3" pattern="^[a-zA-ZÁÉÍÓÚÑáéíóúñ ]+$"></app-input>
+            </div>
+            <ul *ngIf="input2.invalid && input2.touched" class="text-red-600 text-sm mt-1 list-disc list-inside">
+                <li *ngIf="input2.errors?.['required']">Este campo es obligatorio.</li>
+                <li *ngIf="input2.errors?.['minlength']">Debe tener al menos 3 caracteres.</li>
+                <li *ngIf="input2.errors?.['pattern']">No se permiten símbolos o caracteres especiales.</li>
+            </ul>
+        </div>
+
+        <div *ngIf="player1.trim() && player2.trim() && player1.trim().toLowerCase() === player2.trim().toLowerCase()"
+            class="text-red-600 text-sm mb-4">
+            Los nombres no pueden ser iguales.
+        </div>
+
+        <div class="text-end">
+            <app-button [label]="'Iniciar Batalla'" type="submit"
+                [disabled]="f.invalid || player1.trim().toLowerCase() === player2.trim().toLowerCase()"></app-button>
+        </div>
+    </app-card>
+</form>

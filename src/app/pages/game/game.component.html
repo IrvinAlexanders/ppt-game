@@ -1,0 +1,86 @@
+<app-alert
+  *ngIf="alertMessage"
+  [type]="alertType"
+  [message]="alertMessage"
+  class="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-xl"
+/>
+
+<div class="min-h-screen bg-gray-100 p-8" *ngIf="!loading && game">
+    <div class="max-w-5xl mx-auto bg-white p-6 rounded shadow-md">
+        <h2 class="text-2xl font-bold mb-4 text-center">Ronda {{ game.rounds.length + 1 }}</h2>
+        <div *ngIf="game.winner" class="text-center p-12">
+            <h2 class="text-3xl font-bold mb-4 text-green-700">¡Tenemos un Ganador!!</h2>
+            <p class="text-xl mb-8">🎉 {{ game.winner.name }} es el nuevo campeón 🎉</p>
+
+            <div class="flex justify-center gap-4">
+                <app-button [label]="'Revancha'" (clicked)="restartGame()"></app-button>
+                <app-button [label]="'Nuevo Juego'" (clicked)="goToNewGame()"></app-button>
+            </div>
+        </div>
+        <div *ngIf="!game.winner">
+            <form [formGroup]="roundForm" (ngSubmit)="nextTurn()" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Panel de movimiento por turno -->
+                <div>
+                    <!-- Turno Jugador 1 -->
+                    <div *ngIf="currentTurn === 1">
+                        <p class="font-semibold mb-2">Jugador 1</p>
+                        <label class="block">Seleccione movimiento</label>
+                        <select class="mt-1 p-2 border rounded w-full" formControlName="player1_choice">
+                            <option value="" disabled selected>Seleccione</option>
+                            <option *ngFor="let c of choices" [value]="c.value">{{ c.label }}</option>
+                        </select>
+                        <p *ngIf="roundForm.get('player1_choice')?.invalid && roundForm.get('player1_choice')?.touched"
+                            class="text-sm text-red-600">
+                            Seleccione un movimiento válido.
+                        </p>
+
+                        <button type="submit"
+                            class="mt-6 bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700">
+                            Siguiente
+                        </button>
+                    </div>
+
+                    <!-- Turno Jugador 2 -->
+                    <div *ngIf="currentTurn === 2">
+                        <p class="font-semibold mb-2">Jugador 2</p>
+                        <label class="block">Seleccione movimiento</label>
+                        <select class="mt-1 p-2 border rounded w-full" formControlName="player2_choice">
+                            <option value="" disabled selected>Seleccione</option>
+                            <option *ngFor="let c of choices" [value]="c.value">{{ c.label }}</option>
+                        </select>
+                        <p *ngIf="roundForm.get('player2_choice')?.invalid && roundForm.get('player2_choice')?.touched"
+                            class="text-sm text-red-600">
+                            Seleccione un movimiento válido.
+                        </p>
+
+                        <button type="submit"
+                            class="mt-6 bg-green-600 text-white px-4 py-2 rounded shadow hover:bg-green-700">
+                            Enviar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tabla de resultados -->
+                <div>
+                    <h3 class="font-bold text-xl mb-2">Resultado Parcial</h3>
+                    <table class="w-full text-left border">
+                        <thead>
+                            <tr>
+                                <th class="border px-2 py-1">Ronda</th>
+                                <th class="border px-2 py-1">Ganador</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let round of game.rounds">
+                                <td class="border px-2 py-1">{{ round.round_number }}</td>
+                                <td class="border px-2 py-1">
+                                    {{ round.round_winner?.name || 'Empate' }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

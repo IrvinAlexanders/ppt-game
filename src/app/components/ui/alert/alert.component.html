@@ -1,0 +1,11 @@
+<div [ngClass]="alertClass" class="p-4 rounded-lg flex items-center gap-2 shadow-md">
+  <span class="text-lg">
+    <ng-container [ngSwitch]="type">
+      <span *ngSwitchCase="'success'">✅</span>
+      <span *ngSwitchCase="'danger'">❌</span>
+      <span *ngSwitchCase="'warning'">⚠️</span>
+      <span *ngSwitchCase="'info'">ℹ️</span>
+    </ng-container>
+  </span>
+  <span class="font-medium">{{ message }}</span>
+</div>

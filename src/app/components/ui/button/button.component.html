@@ -1,7 +1,8 @@
 <button
+  [disabled]="disabled"
   [type]="type"
   (click)="handleClick()"
-  [ngClass]="'px-4 py-2 rounded-md text-white bg-blue-500 hover:bg-blue-600 ' + extraClasses"
+  [ngClass]="'px-4 py-2 rounded-md text-white bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:hover:bg-gray-400' + extraClasses"
 >
   {{ label }}
 </button>

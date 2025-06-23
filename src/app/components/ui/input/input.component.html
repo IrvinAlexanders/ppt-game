@@ -1,1 +1,8 @@
-<p>input works!</p>
+<input
+  [type]="type"
+  [placeholder]="placeholder"
+  [value]="value"
+  [disabled]="disabled"
+  (input)="handleInput($event)"
+  class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-500"
+/>
