@@ -6,6 +6,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ButtonComponent } from '@app/components/ui/button/button.component';
 import { AlertComponent } from '@app/components/ui/alert/alert.component';
+import { LoadingScreenComponent } from '@app/components/shared/loading-screen/loading-screen.component';
+import { finalize, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-game',
@@ -15,7 +17,8 @@ import { AlertComponent } from '@app/components/ui/alert/alert.component';
     HttpClientModule,
     ReactiveFormsModule,
     ButtonComponent,
-    AlertComponent
+    AlertComponent,
+    LoadingScreenComponent
   ],
   templateUrl: './game.component.html',
   styleUrl: './game.component.scss'
@@ -44,6 +47,13 @@ export class GameComponent implements OnInit {
       this.gameId = params.get('id')!;
       this.loadGame(this.gameId);
     });
+  }
+
+  setLoadingWhile<T>(obs: Observable<T>): Observable<T> {
+    this.loading = true;
+    return obs.pipe(
+      finalize(() => this.loading = false)
+    );
   }
 
   loadGame(gameId: string) {
@@ -104,8 +114,8 @@ export class GameComponent implements OnInit {
         player2_choice: this.roundForm.value.player2_choice
       };
 
-      this.gameService.createRound(this.gameId, payload).subscribe({
-        next: (res) => {
+      this.setLoadingWhile(this.gameService.createRound(this.gameId, payload)).subscribe({
+        next: () => {
           this.roundForm.reset();
           this.player1Choice = '';
           this.currentTurn = 1;
@@ -119,28 +129,13 @@ export class GameComponent implements OnInit {
     }
   }
 
-  submitRound() {
-    if (this.roundForm.invalid) {
-      this.roundForm.markAllAsTouched();
-      return;
-    }
-
-    this.gameService.createRound(this.gameId, this.roundForm.value).subscribe({
-      next: () => {
-        this.roundForm.reset();
-      },
-      error: (err) => {
-        console.error('Error al enviar la ronda', err);
-        this.showAlert('danger', 'Error al enviar la ronda. Inténtalo de nuevo más tarde.');
-      }
-    });
-  }
-
   restartGame() {
     const player1_name = this.game.player1.name;
     const player2_name = this.game.player2.name;
 
-    this.gameService.createGame({ player1_name, player2_name }).subscribe({
+    this.setLoadingWhile(
+      this.gameService.createGame({ player1_name, player2_name })
+    ).subscribe({
       next: (newGame) => {
         this.router.navigate(['/game', newGame.id]);
       },
