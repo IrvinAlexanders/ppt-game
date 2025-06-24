@@ -1,3 +1,4 @@
+<!-- Alerta global -->
 <app-alert
   *ngIf="alertMessage"
   [type]="alertType"
@@ -8,13 +9,13 @@
 <app-loading-screen *ngIf="loading" />
 
 <div class="min-h-screen bg-gray-100 p-8" *ngIf="!loading && game">
-    <div class="max-w-5xl mx-auto bg-white p-6 rounded shadow-md">
+    <div class="max-w-5xl mx-auto bg-white p-6 rounded shadow-md min-h-[440px]">
         <h2 class="text-2xl font-bold mb-4 text-center">Ronda {{ game.rounds.length + 1 }}</h2>
         <div *ngIf="game.winner" class="text-center p-12">
             <h2 class="text-3xl font-bold mb-4 text-green-700">¡Tenemos un Ganador!!</h2>
             <p class="text-xl mb-8">🎉 {{ game.winner.name }} es el nuevo campeón 🎉</p>
 
-            <div class="flex justify-center gap-4">
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
                 <app-button [label]="'Revancha'" (clicked)="restartGame()"></app-button>
                 <app-button [label]="'Nuevo Juego'" (clicked)="goToNewGame()"></app-button>
             </div>
@@ -65,22 +66,24 @@
                 <!-- Tabla de resultados -->
                 <div>
                     <h3 class="font-bold text-xl mb-2">Resultado Parcial</h3>
-                    <table class="w-full text-left border">
-                        <thead>
-                            <tr>
-                                <th class="border px-2 py-1">Ronda</th>
-                                <th class="border px-2 py-1">Ganador</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr *ngFor="let round of game.rounds">
-                                <td class="border px-2 py-1">{{ round.round_number }}</td>
-                                <td class="border px-2 py-1">
-                                    {{ round.round_winner?.name || 'Empate' }}
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="max-h-64 overflow-y-auto">
+                        <table class="w-full text-left border">
+                            <thead>
+                                <tr>
+                                    <th class="border px-2 py-1">Ronda</th>
+                                    <th class="border px-2 py-1">Ganador</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let round of game.rounds">
+                                    <td class="border px-2 py-1">{{ round.round_number }}</td>
+                                    <td class="border px-2 py-1">
+                                        {{ round.round_winner?.name || 'Empate' }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </form>
         </div>

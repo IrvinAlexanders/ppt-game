@@ -8,6 +8,7 @@ import { ButtonComponent } from '@app/components/ui/button/button.component';
 import { AlertComponent } from '@app/components/ui/alert/alert.component';
 import { LoadingScreenComponent } from '@app/components/shared/loading-screen/loading-screen.component';
 import { finalize, Observable } from 'rxjs';
+import { Round } from '@app/models';
 
 @Component({
   selector: 'app-game',
@@ -37,16 +38,37 @@ export class GameComponent implements OnInit {
   alertType: 'success' | 'danger' | 'info' | 'warning' = 'info';
 
   choices = [
-    { label: 'Piedra', value: 'rock' },
-    { label: 'Papel', value: 'paper' },
-    { label: 'Tijera', value: 'scissors' }
+    { label: 'Piedra', value: 'rock', emoji: '🪨' },
+    { label: 'Papel', value: 'paper', emoji: '📄' },
+    { label: 'Tijera', value: 'scissors', emoji: '✂️' }
   ];
+
+  private choiceMap = new Map<string, { label: string; emoji: string }>();
 
   ngOnInit(): void {
     this.route.paramMap.subscribe((params) => {
       this.gameId = params.get('id')!;
       this.loadGame(this.gameId);
     });
+
+    this.choices.forEach(choice => {
+      this.choiceMap.set(choice.value, { label: choice.label, emoji: choice.emoji });
+    });
+  }
+
+  showRoundResult(round: Round) {
+    const p1 = this.choiceMap.get(round.player1_choice);
+    const p2 = this.choiceMap.get(round.player2_choice);
+
+    if (!p1 || !p2) return;
+
+    if (round.player1_choice === round.player2_choice) {
+      this.showAlert('info', `Empate: ambos eligieron ${p1.emoji} ${p1.label}`);
+      return;
+    }
+
+    const ganador = round.round_winner?.name ?? 'Ninguno';
+    this.showAlert('success', `${p1.emoji} ${p1.label} gana a ${p2.emoji} ${p2.label} — esta ronda la gana ${ganador}`);
   }
 
   setLoadingWhile<T>(obs: Observable<T>): Observable<T> {
@@ -115,10 +137,11 @@ export class GameComponent implements OnInit {
       };
 
       this.setLoadingWhile(this.gameService.createRound(this.gameId, payload)).subscribe({
-        next: () => {
+        next: (res) => {
           this.roundForm.reset();
           this.player1Choice = '';
           this.currentTurn = 1;
+          this.showRoundResult(res);
           this.loadGame(this.gameId);
         },
         error: (err) => {
